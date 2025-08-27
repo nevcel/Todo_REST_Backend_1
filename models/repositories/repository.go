@@ -10,4 +10,5 @@ type TodoRepository interface {
 	ReadTodoById(string) (todo.Todo, error)
 	CreateTodo(todo.Todo) (todo.Todo, error)
 	UpdateTodoById(string, todo.Todo) (todo.Todo, error)
+	DeleteTodoById(string, todo.Todo) (todo.Todo, error)
 }

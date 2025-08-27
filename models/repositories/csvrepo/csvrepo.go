@@ -161,3 +161,43 @@ func (c *CsvFileTodoRepository) UpdateTodoById(id string, todoUpdate todo.Todo) 
 
 	return todoUpdate, nil
 }
+func (c *CsvFileTodoRepository) DeleteTodoById(id string, _ todo.Todo) (todo.Todo, error) {
+	// Todos aus Datei lesen
+	todos, err := c.ReadTodos()
+	if err != nil {
+		return todo.Todo{}, fmt.Errorf("error reading todos: %w", err)
+	}
+
+	// Todo finden und speichern bevor es gelöscht wird
+	var deletedTodo todo.Todo
+	var remainingTodos []todo.Todo
+	itemFound := false
+
+	for _, currentTodo := range todos {
+		if id == currentTodo.Id {
+			deletedTodo = currentTodo
+			itemFound = true
+			continue
+		}
+		remainingTodos = append(remainingTodos, currentTodo)
+	}
+
+	if !itemFound {
+		return todo.Todo{}, fmt.Errorf("todo with ID %s not found", id)
+	}
+
+	// Datei leeren
+	if err := utils.ClearFile(FileName); err != nil {
+		return todo.Todo{}, fmt.Errorf("error clearing file: %w", err)
+	}
+
+	// Verbleibende Todos zurückschreiben
+	for _, t := range remainingTodos {
+		// Verwende direkt die CreateTodo Methode um die verbleibenden Todos zu speichern
+		if _, err := c.CreateTodo(t); err != nil {
+			return todo.Todo{}, fmt.Errorf("error rewriting todos: %w", err)
+		}
+	}
+
+	return deletedTodo, nil
+}

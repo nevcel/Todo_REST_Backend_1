@@ -68,3 +68,7 @@ func (m *MemoryTodoRepository) UpdateTodoById(id string, todoUpdate todo.Todo) (
 
 	return todo.Todo{}, fmt.Errorf("item with id %s not found. Updating not possible", id)
 }
+
+func (m *MemoryTodoRepository) DeleteTodoById(id string, todoDelete todo.Todo) (todo.Todo, error) {
+	return todoDelete, nil
+}

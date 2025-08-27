@@ -91,3 +91,11 @@ func UpdateTodoById(id string, todoUpdate todo.Todo) (todo.Todo, error) {
 	}
 	return todoRepository.UpdateTodoById(id, todoUpdate)
 }
+
+// DeleteTodoById delete todo from repository (abstracted by repository pattern)
+func DeleteTodoById(id string, todoDelete todo.Todo) (todo.Todo, error) {
+	if todoRepository == nil {
+		return todo.Todo{}, errors.New("todoToDelete repositories must not be nil")
+	}
+	return todoRepository.DeleteTodoById(id, todoDelete)
+}

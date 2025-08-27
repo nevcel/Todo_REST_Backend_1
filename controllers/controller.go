@@ -58,6 +58,7 @@ func Run() error {
 	api.HandleFunc(path.Join(UriRessourceTodos, UriRessourceTodosPathParameterName), TodoGetById).Methods("GET")
 	api.HandleFunc(UriRessourceTodos, TodoPost).Methods("POST")
 	api.HandleFunc(path.Join(UriRessourceTodos, UriRessourceTodosPathParameterName), TodoPut).Methods("PUT")
+	api.HandleFunc(path.Join(UriRessourceTodos, UriRessourceTodosPathParameterName), TodoDelete).Methods("DELETE")
 
 	fmt.Println("Backend running at:", backendHostUrl)
 	err = http.ListenAndServe(backendHostUrl, router)
@@ -207,4 +208,29 @@ func TodoPut(writer http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// TodoDelete Handler for a todo delete by id action
+func TodoDelete(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	// ID aus der URL holen
+	vars := mux.Vars(request)
+	id := vars["id"]
+
+	// Todo anhand der ID löschen
+	var todoToDelete todo.Todo
+	todoDeleted, err := models.DeleteTodoById(id, todoToDelete)
+	if err != nil {
+		handleErrorAndDiscloseDetails(writer, http.StatusNotFound)
+		return
+	}
+
+	writer.WriteHeader(http.StatusOK)
+	response := models.JsonExtendedResponse{Data: todoDeleted}
+	err = json.NewEncoder(writer).Encode(response)
+	if err != nil {
+		panic(err)
+	}
+
 }
